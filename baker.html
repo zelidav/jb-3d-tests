@@ -37,7 +37,7 @@ function zoomAt(x, y) {
   stop();
   level += 1;
   const p = hit.position, o = mv.getCameraOrbit();
-  const r = size * [0, 0.45, 0.22][level];
+  const r = size * [0, 0.5, 0.32][level];
   mv.cameraTarget = `${p.x}m ${p.y}m ${p.z}m`;
   mv.cameraOrbit = `${o.theta}rad ${o.phi}rad ${r}m`;
 }
