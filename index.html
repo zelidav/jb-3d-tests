@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>JB 3D Tests</title>
+<style>
+:root{--bg:#f4f4f6;--card:#ffffff;--text:#1d1d22;--muted:#5d5d66;--line:#dcdce2;--blue:#233671;--yellow:#FCD804}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16161a;--card:#222228;--text:#ececf0;--muted:#a3a3ad;--line:#33333b}}
+:root[data-theme="dark"]{--bg:#16161a;--card:#222228;--text:#ececf0;--muted:#a3a3ad;--line:#33333b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:24px 16px 48px}
+main{max-width:1040px;margin:0 auto}
+h1{margin:0 0 6px;font-size:1.6rem}
+.lede{margin:0 0 24px;color:var(--muted);max-width:68ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+a.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;color:inherit;text-decoration:none;transition:transform .15s}
+a.card:hover{transform:translateY(-3px)}
+a.card img{width:100%;aspect-ratio:3/4;object-fit:cover;background:#e9e9ee}
+.body{padding:14px 16px 16px}
+h2{margin:0 0 4px;font-size:1.1rem}
+.tag{display:inline-block;font-size:.75rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--yellow);color:#111;margin-bottom:8px}
+.body p{margin:0;color:var(--muted);font-size:.92rem}
+.ask{margin-top:28px;padding:16px;border-left:4px solid var(--blue);background:var(--card);border-radius:8px}
+</style></head><body><main>
+<h1>JB 3D tests</h1>
+<p class="lede">Three early tests of spinning, zoomable 3D glass for the site. Open one, drag to spin, pinch or scroll to zoom. Works on phone.</p>
+<div class="grid">
+<a class="card" href="northern-lights.html"><img src="northern-lights.jpg" alt="Northern Lights LE in 3D"><div class="body"><span class="tag">Best so far</span><h2>Northern Lights (LE)</h2><p>Built in code from the registration photos: clear glass, real crown wrap, cobalt dot ring, crisp dichroic marbles. Light and fast.</p></div></a>
+<a class="card" href="jaws.html"><img src="jaws.jpg" alt="Jaws LE in 3D"><div class="body"><span class="tag">AI model</span><h2>Jaws (LE)</h2><p>AI model from the front and side photos. Shape and wraps hold up; the clear neck went dark from the photo backdrop.</p></div></a>
+<a class="card" href="baker.html"><img src="baker.jpg" alt="Baker in 3D"><div class="body"><span class="tag">AI model</span><h2>Baker</h2><p>AI model from one product photo. Right silhouette, but reads as pink plastic, not purple glass.</p></div></a>
+</div>
+<div class="ask"><strong>Feedback wanted:</strong> does it feel like the real piece? What's off (color, marbles, glass, proportions)? Which pieces should we do next?</div>
+</main></body></html>
