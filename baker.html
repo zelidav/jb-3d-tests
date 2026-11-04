@@ -83,16 +83,36 @@ const bodyMat = new THREE.MeshPhysicalMaterial({ color: 0xe7c2ff, metalness: 0, 
 const body = new THREE.Mesh(bodyGeo, bodyMat); body.castShadow = true; piece.add(body);
 { const e = edge(bodyGeo, 0x5a14b0, 0.9); e.scale.set(1.004, 1, 1.004); piece.add(e); }
 
-// the collar: the real wrap (photo), on a band just proud of the neck
-const collar = new THREE.Mesh(new THREE.CylinderGeometry(Rp(127), Rp(127), crownH * 0.85, 128, 1, true),
-  new THREE.MeshPhysicalMaterial({ map: tex(T.collar, 3), roughness: 0.08, clearcoat: 1, transparent: true, opacity: 0.9, depthWrite: false, envMapIntensity: 1.2, side: THREE.DoubleSide }));
-collar.position.y = TUBE_TOP - crownH * 0.5; piece.add(collar);
-// clear lumps on the wrap
+// the collar: shot 005 (the collar close up) mapped once across the front half, no tiling. The back half gets a
+// drawn wrap (thin green and dark lines with a few clear lumps), so nothing repeats when it spins.
+const bandH = crownH * 0.85, bandY = TUBE_TOP - crownH * 0.5, bandR = Rp(127);
+// soft sides, so the photo melts into the drawn wrap instead of ending in a hard seam
+function fadeTex() {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 4;
+  const g = c.getContext('2d'), lg = g.createLinearGradient(0, 0, 256, 0);
+  lg.addColorStop(0, '#000'); lg.addColorStop(0.22, '#fff'); lg.addColorStop(0.78, '#fff'); lg.addColorStop(1, '#000');
+  g.fillStyle = lg; g.fillRect(0, 0, 256, 4); return new THREE.CanvasTexture(c);
+}
+const front = new THREE.Mesh(new THREE.CylinderGeometry(bandR, bandR, bandH, 96, 1, true, -Math.PI / 2, Math.PI),
+  new THREE.MeshPhysicalMaterial({ map: tex(T.collar), alphaMap: fadeTex(), roughness: 0.08, clearcoat: 1, transparent: true, opacity: 0.9, depthWrite: false, envMapIntensity: 1.1, side: THREE.DoubleSide }));
+front.position.y = bandY; front.renderOrder = 2;
+function wrapTex() {
+  const c = document.createElement('canvas'); c.width = 1024; c.height = 512;
+  const g = c.getContext('2d'); let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 26; i++) {
+    g.strokeStyle = i % 3 ? 'rgba(40,140,60,.85)' : 'rgba(30,20,40,.8)'; g.lineWidth = 2 + rnd() * 2;
+    const y0 = 40 + rnd() * 430, tilt = (rnd() - .5) * 90; g.beginPath(); g.moveTo(0, y0); g.lineTo(1024, y0 + tilt); g.stroke();
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const back = new THREE.Mesh(new THREE.CylinderGeometry(bandR - 0.06, bandR - 0.06, bandH, 96, 1, true),
+  new THREE.MeshPhysicalMaterial({ map: wrapTex(), color: 0xffffff, transparent: true, opacity: 0.9, roughness: 0.1, clearcoat: 1, depthWrite: false, side: THREE.DoubleSide }));
+back.position.y = bandY; piece.add(back); piece.add(front);
 const clear = glass({ color: 0xf6efff, opacity: 0.3 });
-for (let i = 0; i < 9; i++) {
-  const a = i / 9 * Math.PI * 2 + 0.3, y = TUBE_TOP - 1.5 - (i % 3) * crownH * 0.3;
-  const m = new THREE.Mesh(new THREE.SphereGeometry(0.9 + (i % 2) * 0.3, 32, 24), clear);
-  m.scale.set(1.4, 1, 0.8); m.position.set(Math.cos(a) * (Rp(127) + 0.5), y, Math.sin(a) * (Rp(127) + 0.5)); m.lookAt(0, y, 0); piece.add(m);
+for (let i = 0; i < 5; i++) {
+  const a = Math.PI / 2 + (i + 0.5) / 5 * Math.PI, y = bandY + (i % 2 ? 0.25 : -0.2) * bandH;
+  const m = new THREE.Mesh(new THREE.SphereGeometry(1.0, 32, 24), clear);
+  m.scale.set(1.4, 1, 0.8); m.position.set(Math.sin(a) * (bandR + 0.5), y, Math.cos(a) * (bandR + 0.5)); m.lookAt(0, y, 0); piece.add(m);
 }
 
 // marbles: a photo of each real marble mapped onto its face, worked onto the left-front of the neck, low down
