@@ -86,10 +86,10 @@ const photoMat = (map, alpha) => {
 // with the viewing angle (silver-gold / faint pink-blue), never a solid colour
 // (alpha-blended rather than transmission: the background, the marbles and the colour work behind it show
 // through exactly, with no refraction pass to wash it out)
-const G = Object.assign({ tint: 0xfff6e6, op: 0.2, env: 1.0, edge: 0.55 }, C.glassLook || {});
+const G = Object.assign({ tint: 0xfff6e6, op: 0.2, env: 1.0, edge: 0.55, gold: 0xffcc22, goldK: 0.3 }, C.glassLook || {});
 const glassMat = () => new THREE.MeshPhysicalMaterial({ color: G.tint, metalness: 0, roughness: 0.03, ior: 1.47, transparent: true, opacity: G.op,
   depthWrite: false, specularIntensity: 1, envMapIntensity: G.env, clearcoat: 0.6, clearcoatRoughness: 0.03,
-  iridescence: C.fume ?? 0.5, iridescenceIOR: 1.33, iridescenceThicknessRange: [180, 440], side: THREE.DoubleSide });
+  iridescence: C.fume ?? 0.25, iridescenceIOR: 1.33, iridescenceThicknessRange: [300, 460], side: THREE.DoubleSide });
 const maskOf = (k, like) => { if (!T[k]) return null; const t = tex(T[k]); t.colorSpace = THREE.NoColorSpace; t.wrapS = like.wrapS; t.repeat.copy(like.repeat); t.offset.copy(like.offset); return t; };
 const bodyMask = maskOf('bodyMask', bodyTex);
 let body;
@@ -102,6 +102,12 @@ if (C.glass && bodyMask) {
     vertexShader: 'varying vec3 vN; varying vec3 vV; void main(){ vec4 mv = modelViewMatrix * vec4(position,1.); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
     fragmentShader: 'uniform vec3 c; uniform float k; varying vec3 vN; varying vec3 vV; void main(){ float r = 1. - abs(dot(normalize(vN), normalize(vV))); gl_FragColor = vec4(c, k * smoothstep(0.55, 0.97, r)); }' }));
   e2.scale.set(1.002, 1, 1.002); piece.add(e2);
+  // silver fuming reads gold: a warm yellow highlight that grows toward the turning walls (no blue)
+  const fu = new THREE.Mesh(bodyGeo, new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.NormalBlending,
+    uniforms: { c: { value: col(G.gold) }, k: { value: G.goldK } },
+    vertexShader: 'varying vec3 vN; varying vec3 vV; void main(){ vec4 mv = modelViewMatrix * vec4(position,1.); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
+    fragmentShader: 'uniform vec3 c; uniform float k; varying vec3 vN; varying vec3 vV; void main(){ float r = 1. - abs(dot(normalize(vN), normalize(vV))); gl_FragColor = vec4(c, k * smoothstep(0.35, 0.95, r)); }' }));
+  fu.scale.set(1.001, 1, 1.001); piece.add(fu);
   const decal = new THREE.Mesh(bodyGeo, photoMat(bodyTex, bodyMask)); decal.scale.set(1.004, 1, 1.004); piece.add(decal);
 } else { body = new THREE.Mesh(bodyGeo, photoMat(bodyTex)); body.castShadow = true; piece.add(body); }
 // a glassy rim light along the silhouette
